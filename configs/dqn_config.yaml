@@ -1,0 +1,22 @@
+# DQN 하이퍼파라미터
+gamma: 0.99
+learning_rate: 0.00025
+epsilon_start: 1.0
+epsilon_end: 0.1
+epsilon_decay: 10000
+
+# 버퍼 설정
+buffer_size: 50000
+batch_size: 64
+
+# 네트워크 설정
+sync_interval: 500
+
+# 학습 설정
+episodes: 2000
+env_name: "ALE/Pong-v5"
+
+# 모델 저장 설정
+save_interval: 100
+checkpoint_dir: "models/dqn/pong/checkpoints"
+best_model_path: "models/dqn/pong/best_model.pth"

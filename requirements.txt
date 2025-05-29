@@ -1,0 +1,9 @@
+torch
+torchvision
+ale-py
+gym[atari]
+matplotlib
+opencv-python
+numpy==1.24.4
+autorom
+pyyaml
