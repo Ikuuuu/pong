@@ -96,3 +96,5 @@ nohup python -m src.algorithms.dqn.train --model_path "models/dqn/pong/best_mode
 python -m src.evaluation.evaluate --model_path ""models/dqn/pong/best_model.pth"
 
 nohup python -m src.algorithms.ppo.train > training_ppo.log 2>&1 &
+
+ nohup python -m parallel.ppo > training_ppo_ppa.log 2>&1 &
