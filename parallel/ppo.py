@@ -1,201 +1,171 @@
-# PPO + 병렬 환경 (ALE-Pong-v5)
-# 구조: PPOAgent, 모델, 학습 루프, 벡터환경 생성 및 프레임 전처리 포함
-
 import os
 import gym
+import envpool
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-import matplotlib.pyplot as plt
 from torch.distributions import Categorical
-from gym.vector import AsyncVectorEnv
+import matplotlib.pyplot as plt
 from collections import deque
 
-# 프레임 전처리 함수 (Atari용)
-def preprocess_frame(obs):
-    obs = obs[:, 35:195, :, :]     # crop
-    obs = obs[:, ::2, ::2, :]      # downsample
-    obs = obs[:, :, :, 0]          # R channel만
-    obs = np.expand_dims(obs, 1)   # (B, 1, H, W)
-    return obs.astype(np.float32) / 255.0
+# 설정
+save_dir = "./ppo_models"
+os.makedirs(save_dir, exist_ok=True)
+model_path = os.path.join(save_dir, "final_model.pth")
+best_model_path = os.path.join(save_dir, "best_model.pth")
 
-# 환경 생성기 (for 병렬)
-def make_env():
-    def thunk():
-        env = gym.make("ALE/Pong-v5")
-        return env
-    return thunk
+# 하이퍼파라미터
+learning_rate = 2.5e-4
+gamma = 0.99
+gae_lambda = 0.95
+clip_coef = 0.1
+value_coef = 0.5
+entropy_coef = 0.01
+max_grad_norm = 0.5
+total_timesteps = 10_000_000
+num_envs = 8
+num_steps = 128
+update_epochs = 4
+num_minibatches = 4
+batch_size = num_envs * num_steps
+minibatch_size = batch_size // num_minibatches
+save_interval = 1_000_000
 
-# 모델 정의
+# 환경 생성
+envs = envpool.make_gym("Pong-v5", env_type="atari", num_envs=num_envs, episodic_life=True)
+obs_shape = envs.observation_space.shape
+n_actions = envs.action_space.n
+
+# 모델
 class ActorCritic(nn.Module):
-    def __init__(self, input_channels, num_actions):
+    def __init__(self):
         super().__init__()
         self.conv = nn.Sequential(
-            nn.Conv2d(input_channels, 32, 8, 4), nn.ReLU(),
+            nn.Conv2d(4, 32, 8, 4), nn.ReLU(),
             nn.Conv2d(32, 64, 4, 2), nn.ReLU(),
-            nn.Conv2d(64, 64, 3, 1), nn.ReLU(),
+            nn.Conv2d(64, 64, 3, 1), nn.ReLU()
         )
         self.fc = nn.Sequential(
-            nn.Linear(64 * 6 * 6, 512), nn.ReLU()
+            nn.Flatten(),
+            nn.Linear(64 * 7 * 7, 512), nn.ReLU()
         )
-        self.actor = nn.Linear(512, num_actions)
-        self.critic = nn.Linear(512, 1)
+        self.policy = nn.Linear(512, n_actions)
+        self.value = nn.Linear(512, 1)
 
     def forward(self, x):
+        x = x / 255.0
         x = self.conv(x)
-        x = x.view(x.size(0), -1)
         x = self.fc(x)
-        return F.softmax(self.actor(x), dim=-1), self.critic(x)
+        return self.policy(x), self.value(x)
 
-# PPO 에이전트
-class PPOAgent:
-    def __init__(self, model, config, device):
-        self.model = model.to(device)
-        self.optimizer = optim.Adam(model.parameters(), lr=config['lr'])
-        self.device = device
-        self.config = config
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = ActorCritic().to(device)
+optimizer = optim.Adam(model.parameters(), lr=learning_rate, eps=1e-5)
 
-    def get_action(self, obs):
-        obs = torch.FloatTensor(obs).to(self.device)
-        with torch.no_grad():
-            probs, values = self.model(obs)
-        dist = Categorical(probs)
-        actions = dist.sample()
-        return actions.cpu().numpy(), dist.log_prob(actions).cpu().numpy(), values.cpu().numpy(), dist.entropy().cpu().numpy()
-
-    def compute_gae(self, rewards, values, dones, next_values):
-        adv = np.zeros_like(rewards)
-        gae = 0
-        for t in reversed(range(len(rewards))):
-            mask = 1.0 - dones[t]
-            delta = rewards[t] + self.config['gamma'] * next_values[t] * mask - values[t]
-            gae = delta + self.config['gamma'] * self.config['gae_lambda'] * mask * gae
-            adv[t] = gae
-        returns = adv + values
-        return adv, returns
-
-    def update(self, obs, actions, old_log_probs, returns, advantages):
-        obs = torch.FloatTensor(obs).to(self.device)
-        actions = torch.LongTensor(actions).to(self.device)
-        old_log_probs = torch.FloatTensor(old_log_probs).to(self.device)
-        returns = torch.FloatTensor(returns).to(self.device)
-        advantages = torch.FloatTensor(advantages).to(self.device)
-
-        for _ in range(self.config['ppo_epochs']):
-            idxs = np.arange(len(obs))
-            np.random.shuffle(idxs)
-            for start in range(0, len(obs), self.config['batch_size']):
-                end = start + self.config['batch_size']
-                mb_idx = idxs[start:end]
-
-                probs, values = self.model(obs[mb_idx])
-                dist = Categorical(probs)
-                new_log_probs = dist.log_prob(actions[mb_idx])
-                entropy = dist.entropy().mean()
-
-                ratio = torch.exp(new_log_probs - old_log_probs[mb_idx])
-                surr1 = ratio * advantages[mb_idx]
-                surr2 = torch.clamp(ratio, 1.0 - self.config['clip_ratio'], 1.0 + self.config['clip_ratio']) * advantages[mb_idx]
-
-                policy_loss = -torch.min(surr1, surr2).mean()
-                value_loss = F.mse_loss(values.squeeze(), returns[mb_idx])
-
-                loss = policy_loss + self.config['value_coef'] * value_loss - self.config['entropy_coef'] * entropy
-
-                self.optimizer.zero_grad()
-                loss.backward()
-                nn.utils.clip_grad_norm_(self.model.parameters(), self.config['max_grad_norm'])
-                self.optimizer.step()
-
-    def save(self, path):
-        torch.save(self.model.state_dict(), path)
+# 초기화
+obs, _ = envs.reset()
+obs = torch.tensor(obs, dtype=torch.float32, device=device)
+episode_rewards = []
+ep_rew_buffer = deque(maxlen=100)
+global_step = 0
+best_avg_reward = -float('inf')
 
 # 학습 루프
-def train():
-    config = {
-        'n_envs': 4,
-        'rollout_len': 128,
-        'lr': 2.5e-4,
-        'gamma': 0.99,
-        'gae_lambda': 0.95,
-        'clip_ratio': 0.2,
-        'value_coef': 0.5,
-        'entropy_coef': 0.01,
-        'max_grad_norm': 0.5,
-        'ppo_epochs': 4,
-        'batch_size': 256,
-        'episodes': 1000,
-        'save_path': './ppo_pong_model.pth'
-    }
+for update in range(total_timesteps // batch_size):
+    log_probs, values, rewards, dones, actions = [], [], [], [], []
+    next_obs = obs
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    envs = AsyncVectorEnv([make_env() for _ in range(config['n_envs'])])
-    obs, _ = envs.reset()
-    obs = preprocess_frame(obs)
-    stacked_frames = deque([obs] * 4, maxlen=4)
-    state = np.concatenate(stacked_frames, axis=1)
-
-    model = ActorCritic(input_channels=4, num_actions=envs.single_action_space.n)
-    agent = PPOAgent(model, config, device)
-
-    total_rewards = []
-
-    for episode in range(config['episodes']):
-        obs_buf, act_buf, logp_buf, rew_buf, val_buf, done_buf = [], [], [], [], [], []
-        episode_reward = 0
-
-        for _ in range(config['rollout_len']):
-            actions, log_probs, values, _ = agent.get_action(state)
-            next_obs, rewards, terms, truncs, _ = envs.step(actions)
-            dones = np.logical_or(terms, truncs)
-
-            next_obs = preprocess_frame(next_obs)
-            stacked_frames.append(next_obs)
-            next_state = np.concatenate(stacked_frames, axis=1)
-
-            obs_buf.append(state)
-            act_buf.append(actions)
-            logp_buf.append(log_probs)
-            rew_buf.append(rewards)
-            val_buf.append(values.squeeze())
-            done_buf.append(dones)
-
-            episode_reward += np.mean(rewards)
-            state = next_state
-
-        total_rewards.append(episode_reward)
-
+    for step in range(num_steps):
         with torch.no_grad():
-            _, next_values = agent.model(torch.FloatTensor(state).to(device))
-        next_values = next_values.cpu().numpy().squeeze()
+            logits, value = model(next_obs)
+            dist = Categorical(logits=logits)
+            action = dist.sample()
+            log_prob = dist.log_prob(action)
 
-        obs_buf = np.concatenate(obs_buf)
-        act_buf = np.concatenate(act_buf)
-        logp_buf = np.concatenate(logp_buf)
-        rew_buf = np.array(rew_buf).transpose(1, 0).reshape(-1)
-        val_buf = np.array(val_buf).transpose(1, 0).reshape(-1)
-        done_buf = np.array(done_buf).transpose(1, 0).reshape(-1)
-        next_values = np.repeat(next_values, config['rollout_len'])
+        obs_cpu, rew, done, info = envs.step(action.cpu().numpy())
+        next_obs = torch.tensor(obs_cpu, dtype=torch.float32, device=device)
 
-        adv_buf, ret_buf = agent.compute_gae(rew_buf, val_buf, done_buf, next_values)
-        agent.update(obs_buf, act_buf, logp_buf, ret_buf, adv_buf)
+        log_probs.append(log_prob)
+        values.append(value.squeeze())
+        rewards.append(torch.tensor(rew, dtype=torch.float32, device=device))
+        dones.append(torch.tensor(done, dtype=torch.float32, device=device))
+        actions.append(action)
 
-        print(f"Episode {episode}: mean reward {episode_reward:.2f}")
+        global_step += num_envs
+        for i in range(num_envs):
+            if done[i] and "episode" in info:
+                reward = info["episode"]["r"][i]
+                ep_rew_buffer.append(reward)
+                episode_rewards.append(reward)
+                print(f"Step {global_step}: episode reward = {reward}")
 
-        if (episode + 1) % 100 == 0:
-            agent.save(config['save_path'])
-            print(f"Model saved to {config['save_path']}")
+    # GAE 계산
+    with torch.no_grad():
+        _, next_value = model(next_obs)
+    advantages, returns = [], []
+    gae = 0
+    for t in reversed(range(num_steps)):
+        delta = rewards[t] + gamma * next_value.squeeze() * (1 - dones[t]) - values[t]
+        gae = delta + gamma * gae_lambda * (1 - dones[t]) * gae
+        advantages.insert(0, gae)
+        returns.insert(0, gae + values[t])
 
-    # 학습 완료 후 리워드 그래프 저장
-    plt.plot(total_rewards)
-    plt.xlabel('Episode')
-    plt.ylabel('Total Reward')
-    plt.title('PPO Pong Training Reward')
-    plt.grid(True)
-    plt.savefig('ppo_pong_training_curve.png')
-    print("Reward curve saved to ppo_pong_training_curve.png")
+    # PPO 업데이트
+    b_log_probs = torch.cat(log_probs)
+    b_values = torch.cat(values)
+    b_actions = torch.cat(actions)
+    b_returns = torch.stack(returns).detach()
+    b_advantages = torch.stack(advantages).detach()
 
-if __name__ == "__main__":
-    train()
+    for epoch in range(update_epochs):
+        idx = torch.randperm(batch_size)
+        for start in range(0, batch_size, minibatch_size):
+            end = start + minibatch_size
+            mb_idx = idx[start:end]
+
+            logits, new_values = model(obs[mb_idx])
+            dist = Categorical(logits=logits)
+            new_log_probs = dist.log_prob(b_actions[mb_idx])
+
+            ratio = (new_log_probs - b_log_probs[mb_idx]).exp()
+            surr1 = ratio * b_advantages[mb_idx]
+            surr2 = torch.clamp(ratio, 1 - clip_coef, 1 + clip_coef) * b_advantages[mb_idx]
+            policy_loss = -torch.min(surr1, surr2).mean()
+
+            value_loss = ((b_returns[mb_idx] - new_values.squeeze()) ** 2).mean()
+            entropy_loss = dist.entropy().mean()
+
+            loss = policy_loss + value_coef * value_loss - entropy_coef * entropy_loss
+            optimizer.zero_grad()
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
+            optimizer.step()
+
+    # 모델 저장
+    if global_step % save_interval == 0:
+        print(f"Saving model at step {global_step}")
+        torch.save(model.state_dict(), os.path.join(save_dir, f"ppo_{global_step}.pth"))
+
+    # 베스트 모델 저장
+    if len(ep_rew_buffer) == ep_rew_buffer.maxlen:
+        avg_rew = np.mean(ep_rew_buffer)
+        if avg_rew > best_avg_reward:
+            print(f"New best avg reward: {avg_rew:.2f} → saving best model.")
+            best_avg_reward = avg_rew
+            torch.save(model.state_dict(), best_model_path)
+
+# 학습 종료 후 모델 저장
+torch.save(model.state_dict(), model_path)
+
+# --- ✅ 에피소드별 total reward 차트 저장 ---
+plt.figure(figsize=(10, 5))
+plt.plot(episode_rewards, label="Episode Reward")
+plt.xlabel("Episode")
+plt.ylabel("Total Reward")
+plt.title("PPO Pong - Episode Total Rewards")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.savefig(os.path.join(save_dir, "episode_rewards.png"))
+plt.close()
