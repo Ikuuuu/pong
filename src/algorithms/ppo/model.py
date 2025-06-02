@@ -25,10 +25,7 @@ class ActorCritic(nn.Module):
         )
         
         # Actor (정책) 네트워크
-        self.actor = nn.Sequential(
-            nn.Linear(512, num_actions),
-            nn.Softmax(dim=-1)
-        )
+        self.actor = nn.Linear(512, num_actions)
         
         # Critic (가치) 네트워크
         self.critic = nn.Linear(512, 1)
@@ -38,11 +35,9 @@ class ActorCritic(nn.Module):
         x = self.conv(x)
         x = x.view(x.size(0), -1)  # Flatten
         x = self.fc(x)
-        
-        # Actor와 Critic 출력
-        action_probs = self.actor(x)
+        logits = self.actor(x)
+        action_probs = F.softmax(logits, dim=-1)
         state_value = self.critic(x)
-        
         return action_probs, state_value
     
     def evaluate_actions(self, x, action):

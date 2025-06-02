@@ -38,9 +38,8 @@ def setup_logging(model_dir):
 def preprocess_frame(frame):
     frame = frame[35:195]
     frame = frame[::2, ::2, 0]
-    frame[frame == 144] = 0
-    frame[frame == 109] = 0
-    frame[frame != 0] = 1
+    frame[(frame == 144) | (frame == 109)] = 0  # 배경
+    frame[frame != 0] = 1  # 나머지
     return frame.astype(np.float32)
 
 def stack_frames(stacked_frames, new_frame, is_new):

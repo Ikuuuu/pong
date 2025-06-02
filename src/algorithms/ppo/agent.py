@@ -37,21 +37,18 @@ class PPOAgent:
     def compute_gae(self, rewards, values, next_value, dones):
         advantages = []
         gae = 0
-        
         for t in reversed(range(len(rewards))):
             if t == len(rewards) - 1:
                 next_value_t = next_value
             else:
                 next_value_t = values[t + 1]
-            
             delta = rewards[t] + self.gamma * next_value_t * (1 - dones[t]) - values[t]
             gae = delta + self.gamma * self.gae_lambda * (1 - dones[t]) * gae
             advantages.insert(0, gae)
-            
         advantages = torch.tensor(advantages, dtype=torch.float32).to(self.device)
         returns = advantages + torch.tensor(values, dtype=torch.float32).to(self.device)
-        
-        return advantages, returns
+        norm_advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
+        return norm_advantages, returns
     
     def update(self, states, actions, old_log_probs, returns, advantages):
         # 데이터를 numpy 배열로 변환

@@ -3,15 +3,15 @@ gamma: 0.99
 gae_lambda: 0.95
 clip_ratio: 0.2
 value_coef: 0.5
-entropy_coef: 0.01
+entropy_coef: 0.005
 max_grad_norm: 0.5
-learning_rate: 0.00025
-ppo_epochs: 4
+learning_rate:  0.00025
+ppo_epochs: 5
 batch_size: 64
 
 # 환경 설정
 env_name: "ALE/Pong-v5"
-episodes: 1000
+episodes: 10000
 
 # 모델 저장 설정
 save_interval: 100
