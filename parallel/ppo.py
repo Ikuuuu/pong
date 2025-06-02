@@ -1,6 +1,4 @@
 import os
-import gym
-import envpool
 import numpy as np
 import torch
 import torch.nn as nn
@@ -8,6 +6,7 @@ import torch.optim as optim
 from torch.distributions import Categorical
 import matplotlib.pyplot as plt
 from collections import deque
+import envpool
 
 # 설정
 save_dir = "./ppo_models"
@@ -24,16 +23,16 @@ value_coef = 0.5
 entropy_coef = 0.01
 max_grad_norm = 0.5
 total_timesteps = 10_000_000
-num_envs = 8
+num_envs = 1  # CPU에서 테스트 시 1로 줄이기
 num_steps = 128
 update_epochs = 4
-num_minibatches = 4
+num_minibatches = 1
 batch_size = num_envs * num_steps
 minibatch_size = batch_size // num_minibatches
 save_interval = 1_000_000
 
 # 환경 생성
-envs = envpool.make_gym("Pong-v5", env_type="atari", num_envs=num_envs, episodic_life=True)
+envs = envpool.make_gym("Pong-v5", num_envs=num_envs, frame_skip=4, frame_stack=4)
 obs_shape = envs.observation_space.shape
 n_actions = envs.action_space.n
 
@@ -83,7 +82,9 @@ for update in range(total_timesteps // batch_size):
             action = dist.sample()
             log_prob = dist.log_prob(action)
 
-        obs_cpu, rew, done, info = envs.step(action.cpu().numpy())
+        obs_cpu, info = envs.step(action.cpu().numpy())
+        rew = info["reward"]
+        done = info["terminated"] | info["truncated"]
         next_obs = torch.tensor(obs_cpu, dtype=torch.float32, device=device)
 
         log_probs.append(log_prob)
@@ -93,12 +94,11 @@ for update in range(total_timesteps // batch_size):
         actions.append(action)
 
         global_step += num_envs
-        for i in range(num_envs):
-            if done[i] and "episode" in info:
-                reward = info["episode"]["r"][i]
-                ep_rew_buffer.append(reward)
-                episode_rewards.append(reward)
-                print(f"Step {global_step}: episode reward = {reward}")
+        if "episode" in info:
+            reward = info["episode"]["r"][0]
+            ep_rew_buffer.append(reward)
+            episode_rewards.append(reward)
+            print(f"Step {global_step}: episode reward = {reward}")
 
     # GAE 계산
     with torch.no_grad():
@@ -158,7 +158,7 @@ for update in range(total_timesteps // batch_size):
 # 학습 종료 후 모델 저장
 torch.save(model.state_dict(), model_path)
 
-# --- ✅ 에피소드별 total reward 차트 저장 ---
+# 에피소드별 리워드 시각화 저장
 plt.figure(figsize=(10, 5))
 plt.plot(episode_rewards, label="Episode Reward")
 plt.xlabel("Episode")
