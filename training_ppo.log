@@ -1,12 +1,24 @@
 nohup: ignoring input
 A.L.E: Arcade Learning Environment (version 0.8.1+53f58b7)
 [Powered by Stella]
-2025-06-02 17:09:47,990 - INFO - ==================================================
-2025-06-02 17:09:47,990 - INFO - Training started
-2025-06-02 17:09:47,990 - INFO - ==================================================
-2025-06-02 17:09:47,990 - INFO - Using device: cuda
-2025-06-02 17:09:47,990 - INFO - Starting training with config: {'gamma': 0.99, 'gae_lambda': 0.95, 'clip_ratio': 0.2, 'value_coef': 0.5, 'entropy_coef': 0.005, 'max_grad_norm': 0.5, 'learning_rate': 0.00025, 'ppo_epochs': 5, 'batch_size': 64, 'env_name': 'ALE/Pong-v5', 'episodes': 10000, 'save_interval': 100, 'checkpoint_dir': 'models/ppo/pong/checkpoints', 'best_model_path': 'models/ppo/pong/best_model.pth'}
-2025-06-02 17:09:47,990 - INFO - Initializing PPO Agent...
-2025-06-02 17:09:48,509 - INFO - PPO Agent initialized successfully
-2025-06-02 17:09:48,509 - INFO - Starting training for 10000 episodes
-2025-06-02 17:09:48,509 - INFO - ==================================================
+2025-06-02 17:36:22,389 - INFO - ==================================================
+2025-06-02 17:36:22,389 - INFO - Training started
+2025-06-02 17:36:22,389 - INFO - ==================================================
+2025-06-02 17:36:22,389 - INFO - Using device: cuda
+2025-06-02 17:36:22,389 - INFO - Starting training with config: {'gamma': 0.99, 'gae_lambda': 0.95, 'clip_ratio': 0.2, 'value_coef': 0.5, 'entropy_coef': 0.005, 'max_grad_norm': 0.5, 'learning_rate': 0.0001, 'ppo_epochs': 5, 'batch_size': 64, 'env_name': 'ALE/Pong-v5', 'episodes': 10000, 'save_interval': 100, 'checkpoint_dir': 'models/ppo/pong/checkpoints', 'best_model_path': 'models/ppo/pong/best_model.pth'}
+2025-06-02 17:36:22,390 - INFO - Initializing PPO Agent...
+2025-06-02 17:36:23,059 - INFO - PPO Agent initialized successfully
+2025-06-02 17:36:23,060 - INFO - Starting training for 10000 episodes
+2025-06-02 17:36:23,060 - INFO - ==================================================
+/home/euclid/anaconda3/envs/pong/lib/python3.8/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+  if not isinstance(terminated, (bool, np.bool8)):
+2025-06-02 17:36:30,787 - INFO - Episode 0 - Total Reward: -20.0, Steps: 982
+2025-06-02 17:36:30,809 - INFO - Checkpoint saved to models/ppo/pong/checkpoints/model_episode_0.pth
+2025-06-02 17:36:35,455 - INFO - Episode 1 - Total Reward: -21.0, Steps: 824
+2025-06-02 17:36:40,661 - INFO - Episode 2 - Total Reward: -21.0, Steps: 830
+2025-06-02 17:36:46,376 - INFO - Episode 3 - Total Reward: -21.0, Steps: 940
+2025-06-02 17:36:51,689 - INFO - Episode 4 - Total Reward: -20.0, Steps: 878
+2025-06-02 17:36:58,326 - INFO - Episode 5 - Total Reward: -20.0, Steps: 1052
+2025-06-02 17:37:03,785 - INFO - Episode 6 - Total Reward: -21.0, Steps: 839
+2025-06-02 17:37:08,803 - INFO - Episode 7 - Total Reward: -20.0, Steps: 889
+ -20.0, Steps: 1018
