@@ -1,0 +1,216 @@
+nohup: ignoring input
+A.L.E: Arcade Learning Environment (version 0.8.1+53f58b7)
+[Powered by Stella]
+2025-06-02 10:46:48,991 - INFO - ==================================================
+2025-06-02 10:46:48,991 - INFO - Training started
+2025-06-02 10:46:48,991 - INFO - ==================================================
+2025-06-02 10:46:48,991 - INFO - Using device: cuda
+2025-06-02 10:46:48,991 - INFO - Starting training with config: {'gamma': 0.99, 'learning_rate': 0.0001, 'epsilon_start': 1.0, 'epsilon_end': 0.1, 'epsilon_decay': 200000, 'buffer_size': 50000, 'batch_size': 128, 'sync_interval': 500, 'episodes': 1000, 'env_name': 'ALE/Pong-v5', 'save_interval': 100, 'checkpoint_dir': 'models/dqn/pong/checkpoints', 'best_model_path': 'models/dqn/pong/best_model.pth'}
+2025-06-02 10:46:48,991 - INFO - Initializing DQN Agent...
+2025-06-02 10:46:49,817 - INFO - DQN Agent initialized successfully
+2025-06-02 10:46:49,817 - INFO - No existing model found. Starting fresh training.
+2025-06-02 10:46:49,817 - INFO - Starting training for 1000 episodes
+2025-06-02 10:46:49,817 - INFO - ==================================================
+2025-06-02 10:46:49,824 - INFO - Starting Episode 0
+/home/lab/anaconda3/envs/pong/lib/python3.9/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+  if not isinstance(terminated, (bool, np.bool8)):
+2025-06-02 10:47:10,862 - INFO - Episode 0 completed - Total Reward: -20.0, Steps: 903, Epsilon: 0.996
+2025-06-02 10:47:11,611 - INFO - Checkpoint saved to models/dqn/pong/checkpoints/model_episode_0.pth
+2025-06-02 10:47:11,629 - INFO - Starting Episode 1
+2025-06-02 10:47:32,864 - INFO - Episode 1 completed - Total Reward: -21.0, Steps: 824, Epsilon: 0.992
+2025-06-02 10:47:32,871 - INFO - Starting Episode 2
+2025-06-02 10:48:00,159 - INFO - Episode 2 completed - Total Reward: -20.0, Steps: 1087, Epsilon: 0.987
+2025-06-02 10:48:00,166 - INFO - Starting Episode 3
+2025-06-02 10:48:19,995 - INFO - Episode 3 completed - Total Reward: -21.0, Steps: 792, Epsilon: 0.984
+2025-06-02 10:48:20,002 - INFO - Starting Episode 4
+2025-06-02 10:48:46,431 - INFO - Episode 4 completed - Total Reward: -21.0, Steps: 1058, Epsilon: 0.979
+2025-06-02 10:48:46,438 - INFO - Starting Episode 5
+2025-06-02 10:49:09,079 - INFO - Episode 5 completed - Total Reward: -20.0, Steps: 921, Epsilon: 0.975
+2025-06-02 10:49:09,086 - INFO - Starting Episode 6
+2025-06-02 10:49:28,417 - INFO - Episode 6 completed - Total Reward: -21.0, Steps: 764, Epsilon: 0.971
+2025-06-02 10:49:28,433 - INFO - Starting Episode 7
+2025-06-02 10:49:53,375 - INFO - Episode 7 completed - Total Reward: -21.0, Steps: 991, Epsilon: 0.967
+2025-06-02 10:49:53,382 - INFO - Starting Episode 8
+2025-06-02 10:50:12,341 - INFO - Episode 8 completed - Total Reward: -21.0, Steps: 792, Epsilon: 0.963
+2025-06-02 10:50:12,348 - INFO - Starting Episode 9
+2025-06-02 10:50:39,007 - INFO - Episode 9 completed - Total Reward: -18.0, Steps: 1155, Epsilon: 0.958
+2025-06-02 10:50:39,013 - INFO - Starting Episode 10
+2025-06-02 10:51:02,668 - INFO - Episode 10 completed - Total Reward: -21.0, Steps: 931, Epsilon: 0.954
+2025-06-02 10:51:02,675 - INFO - Starting Episode 11
+2025-06-02 10:51:25,291 - INFO - Episode 11 completed - Total Reward: -20.0, Steps: 908, Epsilon: 0.950
+2025-06-02 10:51:25,298 - INFO - Starting Episode 12
+2025-06-02 10:51:49,957 - INFO - Episode 12 completed - Total Reward: -20.0, Steps: 959, Epsilon: 0.946
+2025-06-02 10:51:49,972 - INFO - Starting Episode 13
+2025-06-02 10:52:11,767 - INFO - Episode 13 completed - Total Reward: -21.0, Steps: 914, Epsilon: 0.942
+2025-06-02 10:52:11,774 - INFO - Starting Episode 14
+2025-06-02 10:52:35,214 - INFO - Episode 14 completed - Total Reward: -20.0, Steps: 935, Epsilon: 0.937
+2025-06-02 10:52:35,221 - INFO - Starting Episode 15
+2025-06-02 10:52:58,489 - INFO - Episode 15 completed - Total Reward: -21.0, Steps: 900, Epsilon: 0.933
+2025-06-02 10:52:58,496 - INFO - Starting Episode 16
+2025-06-02 10:53:23,783 - INFO - Episode 16 completed - Total Reward: -20.0, Steps: 963, Epsilon: 0.929
+2025-06-02 10:53:23,790 - INFO - Starting Episode 17
+2025-06-02 10:53:53,643 - INFO - Episode 17 completed - Total Reward: -20.0, Steps: 1161, Epsilon: 0.924
+2025-06-02 10:53:53,658 - INFO - Starting Episode 18
+2025-06-02 10:54:14,928 - INFO - Episode 18 completed - Total Reward: -21.0, Steps: 845, Epsilon: 0.920
+2025-06-02 10:54:14,935 - INFO - Starting Episode 19
+2025-06-02 10:54:39,824 - INFO - Episode 19 completed - Total Reward: -20.0, Steps: 981, Epsilon: 0.915
+2025-06-02 10:54:39,831 - INFO - Starting Episode 20
+2025-06-02 10:55:05,417 - INFO - Episode 20 completed - Total Reward: -19.0, Steps: 989, Epsilon: 0.911
+2025-06-02 10:55:05,424 - INFO - Starting Episode 21
+2025-06-02 10:55:33,391 - INFO - Episode 21 completed - Total Reward: -20.0, Steps: 1154, Epsilon: 0.906
+2025-06-02 10:55:33,398 - INFO - Starting Episode 22
+2025-06-02 10:55:58,374 - INFO - Episode 22 completed - Total Reward: -20.0, Steps: 1044, Epsilon: 0.901
+2025-06-02 10:55:58,381 - INFO - Starting Episode 23
+2025-06-02 10:56:26,249 - INFO - Episode 23 completed - Total Reward: -21.0, Steps: 1095, Epsilon: 0.896
+2025-06-02 10:56:26,257 - INFO - Starting Episode 24
+2025-06-02 10:56:53,202 - INFO - Episode 24 completed - Total Reward: -19.0, Steps: 1070, Epsilon: 0.891
+2025-06-02 10:56:53,209 - INFO - Starting Episode 25
+2025-06-02 10:57:22,314 - INFO - Episode 25 completed - Total Reward: -19.0, Steps: 1122, Epsilon: 0.886
+2025-06-02 10:57:22,321 - INFO - Starting Episode 26
+2025-06-02 10:57:48,564 - INFO - Episode 26 completed - Total Reward: -20.0, Steps: 1026, Epsilon: 0.882
+2025-06-02 10:57:48,571 - INFO - Starting Episode 27
+2025-06-02 10:58:19,527 - INFO - Episode 27 completed - Total Reward: -18.0, Steps: 1265, Epsilon: 0.876
+2025-06-02 10:58:19,534 - INFO - Starting Episode 28
+2025-06-02 10:58:43,412 - INFO - Episode 28 completed - Total Reward: -20.0, Steps: 950, Epsilon: 0.872
+2025-06-02 10:58:43,419 - INFO - Starting Episode 29
+2025-06-02 10:59:04,377 - INFO - Episode 29 completed - Total Reward: -20.0, Steps: 842, Epsilon: 0.868
+2025-06-02 10:59:04,384 - INFO - Starting Episode 30
+2025-06-02 10:59:28,755 - INFO - Episode 30 completed - Total Reward: -19.0, Steps: 1024, Epsilon: 0.863
+2025-06-02 10:59:28,762 - INFO - Starting Episode 31
+2025-06-02 10:59:59,058 - INFO - Episode 31 completed - Total Reward: -18.0, Steps: 1231, Epsilon: 0.858
+2025-06-02 10:59:59,065 - INFO - Starting Episode 32
+2025-06-02 11:00:21,968 - INFO - Episode 32 completed - Total Reward: -21.0, Steps: 891, Epsilon: 0.854
+2025-06-02 11:00:21,975 - INFO - Starting Episode 33
+2025-06-02 11:00:45,393 - INFO - Episode 33 completed - Total Reward: -21.0, Steps: 935, Epsilon: 0.850
+2025-06-02 11:00:45,400 - INFO - Starting Episode 34
+2025-06-02 11:01:12,488 - INFO - Episode 34 completed - Total Reward: -20.0, Steps: 1095, Epsilon: 0.845
+2025-06-02 11:01:12,495 - INFO - Starting Episode 35
+2025-06-02 11:01:36,356 - INFO - Episode 35 completed - Total Reward: -21.0, Steps: 933, Epsilon: 0.840
+2025-06-02 11:01:36,363 - INFO - Starting Episode 36
+2025-06-02 11:02:05,702 - INFO - Episode 36 completed - Total Reward: -18.0, Steps: 1133, Epsilon: 0.835
+2025-06-02 11:02:05,708 - INFO - Starting Episode 37
+2025-06-02 11:02:28,681 - INFO - Episode 37 completed - Total Reward: -21.0, Steps: 912, Epsilon: 0.831
+2025-06-02 11:02:28,687 - INFO - Starting Episode 38
+2025-06-02 11:02:52,705 - INFO - Episode 38 completed - Total Reward: -21.0, Steps: 944, Epsilon: 0.827
+2025-06-02 11:02:52,712 - INFO - Starting Episode 39
+2025-06-02 11:03:23,321 - INFO - Episode 39 completed - Total Reward: -19.0, Steps: 1204, Epsilon: 0.822
+2025-06-02 11:03:23,328 - INFO - Starting Episode 40
+2025-06-02 11:03:55,314 - INFO - Episode 40 completed - Total Reward: -20.0, Steps: 1253, Epsilon: 0.816
+2025-06-02 11:03:55,321 - INFO - Starting Episode 41
+2025-06-02 11:04:20,460 - INFO - Episode 41 completed - Total Reward: -21.0, Steps: 1002, Epsilon: 0.811
+2025-06-02 11:04:20,467 - INFO - Starting Episode 42
+2025-06-02 11:04:50,065 - INFO - Episode 42 completed - Total Reward: -19.0, Steps: 1027, Epsilon: 0.807
+2025-06-02 11:04:50,072 - INFO - Starting Episode 43
+2025-06-02 11:05:17,590 - INFO - Episode 43 completed - Total Reward: -21.0, Steps: 945, Epsilon: 0.803
+2025-06-02 11:05:17,597 - INFO - Starting Episode 44
+2025-06-02 11:05:46,753 - INFO - Episode 44 completed - Total Reward: -19.0, Steps: 995, Epsilon: 0.798
+2025-06-02 11:05:46,760 - INFO - Starting Episode 45
+2025-06-02 11:06:15,499 - INFO - Episode 45 completed - Total Reward: -20.0, Steps: 988, Epsilon: 0.794
+2025-06-02 11:06:15,506 - INFO - Starting Episode 46
+2025-06-02 11:06:51,898 - INFO - Episode 46 completed - Total Reward: -18.0, Steps: 1252, Epsilon: 0.788
+2025-06-02 11:06:51,905 - INFO - Starting Episode 47
+2025-06-02 11:07:28,715 - INFO - Episode 47 completed - Total Reward: -17.0, Steps: 1278, Epsilon: 0.782
+2025-06-02 11:07:28,722 - INFO - Starting Episode 48
+2025-06-02 11:07:59,637 - INFO - Episode 48 completed - Total Reward: -19.0, Steps: 1059, Epsilon: 0.778
+2025-06-02 11:07:59,644 - INFO - Starting Episode 49
+2025-06-02 11:08:29,596 - INFO - Episode 49 completed - Total Reward: -21.0, Steps: 1058, Epsilon: 0.773
+2025-06-02 11:08:29,603 - INFO - Starting Episode 50
+2025-06-02 11:09:05,610 - INFO - Episode 50 completed - Total Reward: -18.0, Steps: 1301, Epsilon: 0.767
+2025-06-02 11:09:05,617 - INFO - Starting Episode 51
+2025-06-02 11:09:29,839 - INFO - Episode 51 completed - Total Reward: -20.0, Steps: 862, Epsilon: 0.763
+2025-06-02 11:09:29,845 - INFO - Starting Episode 52
+2025-06-02 11:09:57,111 - INFO - Episode 52 completed - Total Reward: -20.0, Steps: 975, Epsilon: 0.759
+2025-06-02 11:09:57,118 - INFO - Starting Episode 53
+2025-06-02 11:10:27,422 - INFO - Episode 53 completed - Total Reward: -20.0, Steps: 1083, Epsilon: 0.754
+2025-06-02 11:10:27,429 - INFO - Starting Episode 54
+2025-06-02 11:10:53,381 - INFO - Episode 54 completed - Total Reward: -21.0, Steps: 931, Epsilon: 0.750
+2025-06-02 11:10:53,387 - INFO - Starting Episode 55
+2025-06-02 11:11:17,944 - INFO - Episode 55 completed - Total Reward: -21.0, Steps: 887, Epsilon: 0.746
+2025-06-02 11:11:17,951 - INFO - Starting Episode 56
+2025-06-02 11:11:49,859 - INFO - Episode 56 completed - Total Reward: -20.0, Steps: 1142, Epsilon: 0.740
+2025-06-02 11:11:49,865 - INFO - Starting Episode 57
+2025-06-02 11:12:24,882 - INFO - Episode 57 completed - Total Reward: -20.0, Steps: 1236, Epsilon: 0.735
+2025-06-02 11:12:24,888 - INFO - Starting Episode 58
+2025-06-02 11:12:55,778 - INFO - Episode 58 completed - Total Reward: -21.0, Steps: 1098, Epsilon: 0.730
+2025-06-02 11:12:55,785 - INFO - Starting Episode 59
+2025-06-02 11:13:29,665 - INFO - Episode 59 completed - Total Reward: -20.0, Steps: 1227, Epsilon: 0.724
+2025-06-02 11:13:29,671 - INFO - Starting Episode 60
+2025-06-02 11:14:10,420 - INFO - Episode 60 completed - Total Reward: -19.0, Steps: 1459, Epsilon: 0.718
+2025-06-02 11:14:10,426 - INFO - Starting Episode 61
+2025-06-02 11:14:42,706 - INFO - Episode 61 completed - Total Reward: -19.0, Steps: 1135, Epsilon: 0.713
+2025-06-02 11:14:42,713 - INFO - Starting Episode 62
+2025-06-02 11:15:11,670 - INFO - Episode 62 completed - Total Reward: -20.0, Steps: 1050, Epsilon: 0.708
+2025-06-02 11:15:11,676 - INFO - Starting Episode 63
+2025-06-02 11:15:41,611 - INFO - Episode 63 completed - Total Reward: -21.0, Steps: 1054, Epsilon: 0.703
+2025-06-02 11:15:41,617 - INFO - Starting Episode 64
+2025-06-02 11:16:12,112 - INFO - Episode 64 completed - Total Reward: -20.0, Steps: 1069, Epsilon: 0.698
+2025-06-02 11:16:12,118 - INFO - Starting Episode 65
+2025-06-02 11:16:44,412 - INFO - Episode 65 completed - Total Reward: -18.0, Steps: 1137, Epsilon: 0.693
+2025-06-02 11:16:44,418 - INFO - Starting Episode 66
+2025-06-02 11:17:15,697 - INFO - Episode 66 completed - Total Reward: -18.0, Steps: 1113, Epsilon: 0.688
+2025-06-02 11:17:15,704 - INFO - Starting Episode 67
+2025-06-02 11:17:44,264 - INFO - Episode 67 completed - Total Reward: -20.0, Steps: 1026, Epsilon: 0.684
+2025-06-02 11:17:44,271 - INFO - Starting Episode 68
+2025-06-02 11:18:16,067 - INFO - Episode 68 completed - Total Reward: -21.0, Steps: 1147, Epsilon: 0.679
+2025-06-02 11:18:16,073 - INFO - Starting Episode 69
+2025-06-02 11:18:49,032 - INFO - Episode 69 completed - Total Reward: -19.0, Steps: 1194, Epsilon: 0.673
+2025-06-02 11:18:49,039 - INFO - Starting Episode 70
+2025-06-02 11:19:21,824 - INFO - Episode 70 completed - Total Reward: -18.0, Steps: 1180, Epsilon: 0.668
+2025-06-02 11:19:21,831 - INFO - Starting Episode 71
+2025-06-02 11:19:50,778 - INFO - Episode 71 completed - Total Reward: -19.0, Steps: 1045, Epsilon: 0.663
+2025-06-02 11:19:50,785 - INFO - Starting Episode 72
+2025-06-02 11:20:17,065 - INFO - Episode 72 completed - Total Reward: -21.0, Steps: 942, Epsilon: 0.659
+2025-06-02 11:20:17,071 - INFO - Starting Episode 73
+2025-06-02 11:20:44,214 - INFO - Episode 73 completed - Total Reward: -19.0, Steps: 967, Epsilon: 0.655
+2025-06-02 11:20:44,220 - INFO - Starting Episode 74
+2025-06-02 11:21:14,141 - INFO - Episode 74 completed - Total Reward: -19.0, Steps: 1068, Epsilon: 0.650
+2025-06-02 11:21:14,148 - INFO - Starting Episode 75
+2025-06-02 11:21:46,177 - INFO - Episode 75 completed - Total Reward: -19.0, Steps: 1136, Epsilon: 0.645
+2025-06-02 11:21:46,184 - INFO - Starting Episode 76
+2025-06-02 11:22:25,902 - INFO - Episode 76 completed - Total Reward: -19.0, Steps: 1407, Epsilon: 0.638
+2025-06-02 11:22:25,909 - INFO - Starting Episode 77
+2025-06-02 11:22:59,454 - INFO - Episode 77 completed - Total Reward: -19.0, Steps: 1196, Epsilon: 0.633
+2025-06-02 11:22:59,461 - INFO - Starting Episode 78
+2025-06-02 11:23:25,210 - INFO - Episode 78 completed - Total Reward: -21.0, Steps: 932, Epsilon: 0.629
+2025-06-02 11:23:25,217 - INFO - Starting Episode 79
+2025-06-02 11:24:00,359 - INFO - Episode 79 completed - Total Reward: -19.0, Steps: 1258, Epsilon: 0.623
+2025-06-02 11:24:00,366 - INFO - Starting Episode 80
+2025-06-02 11:24:27,358 - INFO - Episode 80 completed - Total Reward: -20.0, Steps: 966, Epsilon: 0.619
+2025-06-02 11:24:27,364 - INFO - Starting Episode 81
+2025-06-02 11:24:55,756 - INFO - Episode 81 completed - Total Reward: -20.0, Steps: 1049, Epsilon: 0.614
+2025-06-02 11:24:55,763 - INFO - Starting Episode 82
+2025-06-02 11:25:17,488 - INFO - Episode 82 completed - Total Reward: -21.0, Steps: 792, Epsilon: 0.610
+2025-06-02 11:25:17,495 - INFO - Starting Episode 83
+2025-06-02 11:25:45,783 - INFO - Episode 83 completed - Total Reward: -20.0, Steps: 1065, Epsilon: 0.606
+2025-06-02 11:25:45,791 - INFO - Starting Episode 84
+2025-06-02 11:26:12,292 - INFO - Episode 84 completed - Total Reward: -21.0, Steps: 994, Epsilon: 0.601
+2025-06-02 11:26:12,299 - INFO - Starting Episode 85
+2025-06-02 11:26:36,472 - INFO - Episode 85 completed - Total Reward: -21.0, Steps: 909, Epsilon: 0.597
+2025-06-02 11:26:36,479 - INFO - Starting Episode 86
+2025-06-02 11:26:57,376 - INFO - Episode 86 completed - Total Reward: -21.0, Steps: 764, Epsilon: 0.594
+2025-06-02 11:26:57,383 - INFO - Starting Episode 87
+2025-06-02 11:27:21,667 - INFO - Episode 87 completed - Total Reward: -20.0, Steps: 902, Epsilon: 0.590
+2025-06-02 11:27:21,674 - INFO - Starting Episode 88
+2025-06-02 11:27:46,394 - INFO - Episode 88 completed - Total Reward: -21.0, Steps: 919, Epsilon: 0.585
+2025-06-02 11:27:46,400 - INFO - Starting Episode 89
+2025-06-02 11:28:06,938 - INFO - Episode 89 completed - Total Reward: -21.0, Steps: 782, Epsilon: 0.582
+2025-06-02 11:28:06,945 - INFO - Starting Episode 90
+2025-06-02 11:28:31,366 - INFO - Episode 90 completed - Total Reward: -20.0, Steps: 913, Epsilon: 0.578
+2025-06-02 11:28:31,372 - INFO - Starting Episode 91
+2025-06-02 11:28:57,513 - INFO - Episode 91 completed - Total Reward: -20.0, Steps: 960, Epsilon: 0.574
+2025-06-02 11:28:57,520 - INFO - Starting Episode 92
+2025-06-02 11:29:20,056 - INFO - Episode 92 completed - Total Reward: -21.0, Steps: 852, Epsilon: 0.570
+2025-06-02 11:29:20,063 - INFO - Starting Episode 93
+2025-06-02 11:29:42,743 - INFO - Episode 93 completed - Total Reward: -20.0, Steps: 842, Epsilon: 0.566
+2025-06-02 11:29:42,749 - INFO - Starting Episode 94
+2025-06-02 11:30:06,461 - INFO - Episode 94 completed - Total Reward: -21.0, Steps: 884, Epsilon: 0.562
+2025-06-02 11:30:06,467 - INFO - Starting Episode 95
+2025-06-02 11:30:30,568 - INFO - Episode 95 completed - Total Reward: -21.0, Steps: 886, Epsilon: 0.558
+2025-06-02 11:30:30,575 - INFO - Starting Episode 96
+2025-06-02 11:30:52,824 - INFO - Episode 96 completed - Total Reward: -21.0, Steps: 824, Epsilon: 0.554
+2025-06-02 11:30:52,830 - INFO - Starting Episode 97
+2025-06-02 11:31:14,128 - INFO - Episode 97 completed - Total Reward: -21.0, Steps: 783, Epsilon: 0.551
+2025-06-02 11:31:14,135 - INFO - Starting Episode 98
+2025-06-02 11:31:36,779 - INFO - Episode 98 completed - Total Reward: -21.0, Steps: 824, Epsilon: 0.547
+2025-06-02 11:31:36,786 - INFO - Starting Episode 99
+2025-06-02 11:32:01,479 - INFO - Episode 99 completed - Total Reward: -20.0, Steps: 899, Epsilon: 0.543

@@ -1,0 +1,19 @@
+# PPO 하이퍼파라미터
+gamma: 0.99
+gae_lambda: 0.95
+clip_ratio: 0.2
+value_coef: 0.5
+entropy_coef: 0.01
+max_grad_norm: 0.5
+learning_rate: 0.00025
+ppo_epochs: 4
+batch_size: 64
+
+# 환경 설정
+env_name: "ALE/Pong-v5"
+episodes: 1000
+
+# 모델 저장 설정
+save_interval: 100
+checkpoint_dir: "models/ppo/pong/checkpoints"
+best_model_path: "models/ppo/pong/best_model.pth" 

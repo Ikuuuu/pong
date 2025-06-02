@@ -5,7 +5,7 @@ import numpy as np
 import yaml
 from collections import deque
 import matplotlib.pyplot as plt
-from .agent import DQNAgent
+from .agent import PPOAgent
 import logging
 from datetime import datetime
 
@@ -51,7 +51,7 @@ def stack_frames(stacked_frames, new_frame, is_new):
         stacked_frames.append(processed)
     return np.stack(stacked_frames, axis=0), stacked_frames
 
-def load_config(config_path='configs/dqn_config.yaml'):
+def load_config(config_path='configs/ppo_config.yaml'):
     with open(config_path, 'r', encoding='utf-8') as f:
         return yaml.safe_load(f)
 
@@ -75,7 +75,7 @@ def train(env_name=None, episodes=None, model_path=None):
     logger.info(f"Using device: {device}")
     
     # 모델 저장 경로 설정
-    model_dir = os.path.join("models", "dqn", "pong")
+    model_dir = os.path.join("models", "ppo", "pong")
     checkpoint_dir = os.path.join(model_dir, "checkpoints")
     best_model_path = os.path.join(model_dir, "best_model.pth")
     
@@ -93,12 +93,12 @@ def train(env_name=None, episodes=None, model_path=None):
     logger.info(f"Starting training with config: {config}")
     
     # 에이전트 설정
-    logger.info("Initializing DQN Agent...")
+    logger.info("Initializing PPO Agent...")
     try:
-        agent = DQNAgent(env.action_space.n, device, config)
-        logger.info("DQN Agent initialized successfully")
+        agent = PPOAgent(input_channels=4, num_actions=env.action_space.n, device=device, config=config)
+        logger.info("PPO Agent initialized successfully")
     except Exception as e:
-        logger.error(f"Failed to initialize DQN Agent: {str(e)}")
+        logger.error(f"Failed to initialize PPO Agent: {str(e)}")
         raise
     
     # 이전 모델이 있으면 로드
@@ -107,47 +107,14 @@ def train(env_name=None, episodes=None, model_path=None):
         try:
             agent.load(model_path)
             logger.info(f"Model loaded successfully from {model_path}")
-            logger.info(f"Current epsilon: {agent.epsilon:.3f}")
-            logger.info(f"Total steps: {agent.total_steps}")
-            logger.info(f"Replay buffer size: {len(agent.replay_buffer)}")
-            
-            # 이전 모델의 reward 정보를 로드
-            checkpoint = torch.load(model_path)
-            if 'best_reward' in checkpoint:
-                best_reward = checkpoint['best_reward']
-                logger.info(f"Loaded previous best reward: {best_reward}")
         except Exception as e:
             logger.error(f"Error loading model: {str(e)}")
             raise
-    elif os.path.exists(best_model_path):
-        logger.info(f"Attempting to load best model from {best_model_path}")
-        try:
-            agent.load(best_model_path)
-            logger.info(f"Best model loaded successfully from {best_model_path}")
-            logger.info(f"Current epsilon: {agent.epsilon:.3f}")
-            logger.info(f"Total steps: {agent.total_steps}")
-            logger.info(f"Replay buffer size: {len(agent.replay_buffer)}")
-        except Exception as e:
-            logger.error(f"Error loading best model: {str(e)}")
-            raise
-    else:
-        logger.info("No existing model found. Starting fresh training.")
 
     # 학습 기록
-    rewards = []
+    episode_rewards = []
     best_reward = float('-inf')
     window_size = 100  # 평균을 계산할 에피소드 수
-    
-    # 이전 모델이 있으면 해당 모델의 reward를 best_reward로 설정
-    if model_path and os.path.exists(model_path):
-        try:
-            # 이전 모델의 reward 정보를 로드
-            checkpoint = torch.load(model_path)
-            if 'best_reward' in checkpoint:
-                best_reward = checkpoint['best_reward']
-                logger.info(f"Loaded previous best reward: {best_reward}")
-        except Exception as e:
-            logger.warning(f"Could not load previous best reward: {str(e)}")
     
     logger.info(f"Starting training for {episodes} episodes")
     logger.info("="*50)
@@ -159,60 +126,77 @@ def train(env_name=None, episodes=None, model_path=None):
         done = False
         total_reward = 0
         steps = 0
-
-        logger.info(f"Starting Episode {episode}")
-
+        
+        # 에피소드 데이터 수집
+        states = []
+        actions = []
+        step_rewards = []
+        values = []
+        log_probs = []
+        dones = []
+        
         while not done:
-            action = agent.get_action(state)
-            step_result = env.step(action)
-            if len(step_result) == 5:
-                next_obs, reward, terminated, truncated, _ = step_result
-                done = terminated or truncated
-            else:
-                next_obs, reward, done, _ = step_result
+            # 액션 선택
+            action, log_prob, value = agent.get_action(state)
+            
+            # 환경과 상호작용
+            next_obs, reward, terminated, truncated, _ = env.step(action)
+            done = terminated or truncated
             next_state, stacked = stack_frames(stacked, next_obs, False)
-
-            agent.replay_buffer.add(state, action, reward, next_state, done)
-            agent.update()
-
+            
+            # 데이터 저장
+            states.append(state)
+            actions.append(action)
+            step_rewards.append(reward)
+            values.append(value)
+            log_probs.append(log_prob)
+            dones.append(done)
+            
             state = next_state
             total_reward += reward
             steps += 1
-
-            # 500 스텝마다 진행상황 로깅
-            # if steps % 500 == 0:
-            #     logger.info(f"Episode {episode} - Steps: {steps}, Current Reward: {total_reward}, Epsilon: {agent.epsilon:.3f}")
-
-        rewards.append(total_reward)
-        logger.info(f"Episode {episode} completed - Total Reward: {total_reward}, Steps: {steps}, Epsilon: {agent.epsilon:.3f}")
-        # 100 에피소드마다 로깅
-        # if episode % 100 == 0:
-        #     logger.info(f"Episode {episode} completed - Total Reward: {total_reward}, Steps: {steps}, Epsilon: {agent.epsilon:.3f}")
+        
+        # 에피소드 총 보상 저장
+        episode_rewards.append(total_reward)
+        
+        # 마지막 상태의 가치 계산
+        with torch.no_grad():
+            state_tensor = torch.FloatTensor(state).unsqueeze(0).to(device)
+            _, next_value = agent.actor_critic(state_tensor)
+            next_value = next_value.item()
+        
+        # GAE 계산
+        advantages, returns = agent.compute_gae(step_rewards, values, next_value, dones)
+        
+        # PPO 업데이트
+        agent.update(states, actions, log_probs, returns, advantages)
+        
+        # 에피소드 결과 로깅
+        logger.info(f"Episode {episode} - Total Reward: {total_reward}, Steps: {steps}")
         
         # 모델 저장
         if episode % config['save_interval'] == 0:
             checkpoint_path = os.path.join(checkpoint_dir, f"model_episode_{episode}.pth")
             agent.save(checkpoint_path)
             logger.info(f"Checkpoint saved to {checkpoint_path}")
-
-        # 평균 reward 계산
-        if len(rewards) >= window_size:
-            avg_reward = sum(rewards[-window_size:]) / window_size
-            # 최고 성능 모델 저장 (평균 reward가 이전보다 좋을 때만)
+        
+        # 평균 reward 계산 및 best model 저장
+        if len(episode_rewards) >= window_size:
+            avg_reward = sum(episode_rewards[-window_size:]) / window_size
             if avg_reward > best_reward:
                 best_reward = avg_reward
-                agent.save(best_model_path, best_reward=best_reward)
+                agent.save(best_model_path)
                 logger.info(f"New best model saved! Average Reward: {avg_reward:.2f} (over last {window_size} episodes)")
 
     # 최종 모델 저장
-    agent.save(best_model_path, best_reward=best_reward)
+    agent.save(best_model_path)
     logger.info(f"Training completed. Best model saved to {best_model_path}")
 
     # 학습 곡선 그리기
-    plt.plot(rewards)
+    plt.plot(episode_rewards)
     plt.xlabel("Episode")
     plt.ylabel("Total Reward")
-    plt.title("Dueling Double DQN on Pong")
+    plt.title("PPO on Pong")
     plt.savefig(os.path.join(model_dir, "training_curve.png"))
     logger.info("Training curve saved")
     plt.close()
